@@ -28,7 +28,18 @@ SELECT productCode, productName FROM products WHERE productCode LIKE '%_20%';
 
 ## 7
 -- Dentro de la tabla orderdetails, obten el total de cada orden.
-SELECT orderNumber, sum(priceEach) AS 'Total de cada orden' FROM orderdetails GROUP BY orderNumber;
+USE classicmodels;
+SELECT * FROM orderdetails;
+SELECT orderNumber, sum(priceEach) AS totalOrdenes FROM orderdetails GROUP BY orderNumber;
+
+SELECT orderNumber,productCode, (quantityOrdered*priceEach) as totalOrdenes FROM orderdetails GROUP BY orderNumber,orderNumber,productCode;
+
+SELECT orderNumber, sum(TotalProducto) FROM (SELECT orderNumber,productCode, (quantityOrdered*priceEach) AS TotalProducto FROM orderdetails GROUP BY orderNumber,orderNumber,productCode) GROUP BY orderNumber;
+-- Solucion
+
+SELECT orderNumber, sum(priceEach*quantityOrdered) total FROM orderdetails GROUP BY orderNumber;
+
+
 
 ## 8
 -- Dentro de la tabla orders obten el número de órdenes por año.
@@ -50,6 +61,7 @@ DESC payments;
 SELECT * FROM customers;
 SELECT * FROM payments;
 
+SELECT max(amount) AS 'MAXPAGO' FROM payments;
 SELECT customerNumber, checkNumber, amount FROM payments WHERE amount IN ( SELECT max(amount) FROM payments);  
 
 ## 11
@@ -58,12 +70,17 @@ SELECT customerNumber, checkNumber, amount FROM payments WHERE amount > ( SELECT
 
 ## 12
 -- Obten el nombre de aquellos clientes que no han hecho ninguna orden.
-SELECT contactFirstName FROM customers WHERE customerNumber NOT IN (SELECT customerNumber FROM payments);
+SELECT DISTINCT customerNumber FROM orders;
+SELECT contactFirstName FROM customers WHERE customerNumber NOT IN (SELECT DISTINCT customerNumber FROM orders); 
 
 
-## 13
+## 13 ---------------------------------------------------------------------------------------------------------------
 -- Obten el máximo, mínimo y promedio del número de productos en las órdenes de venta.
-############################ SIN Resolver #################
+SELECT * FROM orderdetails;
+SELECT orderNumber, quantityOrdered, productCode FROM orderdetails ORDER BY orderNumber;
+SELECT orderNumber, sum(quantityOrdered) AS 'COUNT' FROM orderdetails GROUP BY orderNumber ORDER BY COUNT; ## Obteniendo la cantidad d eproductos  por orden 
+
+SELECT MAX(CountProduct), min(CountProduct), avg(CountProduct) FROM (SELECT orderNumber, sum(quantityOrdered) AS CountProduct FROM orderdetails GROUP BY orderNumber) AS Sub;
 
 ## 14
 -- Dentro de la tabla orders, obten el número de órdenes que hay por cada estado.
